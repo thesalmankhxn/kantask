@@ -1,7 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { GithubIcon, GoogleIcon } from "@/components/ui/icons";
+import { Input } from '@/components/ui/input';
+import { Label } from "@/components/ui/label";
+import { Spinner } from '@/components/ui/spinner';
+import { cn } from '@/lib/utils';
+import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react';
+
 
 /**
  * Login page component that handles user authentication
@@ -17,55 +26,111 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="space-y-6">
-            <div className="text-center">
-                <h1 className="text-2xl font-bold">Welcome back</h1>
-                <p className="text-gray-600">Please sign in to your account</p>
-            </div>
+        <form
+            className="w-full h-svh flex items-center justify-center"
+        // onSubmit={handleUserPasswordLogin}
+        >
+            <Card className="max-w-md">
+                <CardHeader>
+                    <CardTitle className="text-lg md:text-xl">Sign In</CardTitle>
+                    <CardDescription className="text-xs md:text-sm">
+                        Enter your email below to login to your account
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid gap-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="email">Email</Label>
+                            <Input
+                                id="email"
+                                type="email"
+                                name="email"
+                                placeholder="m@example.com"
+                                required
+                            />
+                        </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                        Email
-                    </label>
-                    <input
-                        id="email"
-                        type="email"
-                        required
-                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                </div>
+                        <div className="grid gap-2">
+                            <div className="flex items-center">
+                                <Label htmlFor="password">Password</Label>
+                                <Link
+                                    href="/forgot-password"
+                                    className="ml-auto inline-block text-sm underline"
+                                    tabIndex={-1}
+                                >
+                                    Forgot your password?
+                                </Link>
+                            </div>
 
-                <div>
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                        Password
-                    </label>
-                    <input
-                        id="password"
-                        type="password"
-                        required
-                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                </div>
+                            <div className="flex gap-1">
+                                <Input
+                                    id="password"
+                                    // type={showPassword ? "text" : "password"}
+                                    placeholder="password"
+                                    autoComplete="password"
+                                    name="password"
+                                    required
+                                />
+                                <Button
+                                    variant="outline"
+                                    type="button"
+                                    // onClick={() => setShowPassword(!showPassword)}
+                                    size="icon"
+                                    tabIndex={-1}
+                                    className="px-2"
+                                >
+                                    {/* {showPassword ? <Eye /> : <EyeOff />} */}
+                                </Button>
+                            </div>
+                        </div>
 
-                <button
-                    type="submit"
-                    className="w-full rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-                >
-                    Sign in
-                </button>
-            </form>
+                        <Button
+                            type="submit"
+                            className="w-full"
+                        // disabled={userPasswordLoginMutation.isPending}
+                        >
+                            {/* {userPasswordLoginMutation.isPending ? <Spinner /> : "Login"} */}
+                        </Button>
+                    </div>
 
-            <p className="text-center text-sm text-gray-600">
-                Don't have an account?{' '}
-                <Link href="/signup" className="text-blue-600 hover:text-blue-700">
-                    Sign up
-                </Link>
-            </p>
-        </div>
+                    <Link
+                        href="/signup"
+                        className={buttonVariants({
+                            variant: "link",
+                            className: "text-left pl-0 w-fit my-2.5",
+                        })}
+                    >
+                        Don&apos;t have an account? Sign up
+                    </Link>
+                    <div
+                        className={cn(
+                            "w-full gap-2 flex items-center",
+                            "justify-between flex-col",
+                        )}
+                    >
+                        <Button
+                            variant="outline"
+                            className={cn("w-full gap-2")}
+                            type="button"
+                        // onClick={handleGoogleLogin}
+                        // disabled={googleLoginMutation.isPending}
+                        >
+                            {/* {googleLoginMutation.isPending ? <Spinner /> : <GoogleIcon />} */}
+                            Sign in with Google
+                        </Button>
+                        <Button
+                            variant="outline"
+                            className={cn("w-full gap-2")}
+                            type="button"
+                        // onClick={handleGithubLogin}
+                        // disabled={githubLoginMutation.isPending}
+                        >
+                            {/* {githubLoginMutation.isPending ? <Spinner /> : <GithubIcon />} */}
+                            Sign in with Github
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+        </form>
     );
 } 

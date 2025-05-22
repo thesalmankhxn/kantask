@@ -2,85 +2,207 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { GoogleIcon } from '@/components/ui/icons';
+import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
+import { cn } from '@/lib/utils';
+import { GithubIcon } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { useRouter } from 'next/navigation';
+import { useMutation } from '@tanstack/react-query';
+import { getOrigin } from '@/lib/constants';
+import { toast } from 'sonner';
 /**
  * Signup page component that handles user registration
  */
 export default function SignupPage() {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const router = useRouter();
+    const callbackURL = getOrigin();
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    // useLoggedInRedirect();
+
+    const signUpMutation = useMutation({
+        mutationFn: async (data: {
+            firstName: string;
+            lastName: string;
+            email: string;
+            password: string;
+            image?: string;
+        }) => {
+            // const response = await authClient.signUp.email({
+            //     email: data.email,
+            //     password: data.password,
+            //     name: `${data.firstName} ${data.lastName}`,
+            //     callbackURL,
+            // });
+
+            // return handleAuthResponse(response);
+        },
+        onSuccess: () => {
+            toast("A verification email has been sent to your email address.", {
+                description: "Please verify your email.",
+            });
+
+            router.push("/");
+        },
+    });
+
+    // const googleLoginMutation = useGoogleLoginMutation({
+    //     callbackURL,
+    // });
+
+    // const githubLoginMutation = useGithubLoginMutation({
+    //     callbackURL,
+    // });
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // TODO: Implement signup logic
-        console.log('Signup attempt:', { name, email, password });
+        const formData = new FormData(e.target as HTMLFormElement);
+        const email = formData.get("email") as string;
+        const password = formData.get("password") as string;
+        const passwordConfirmation = formData.get("passwordConfirmation") as string;
+        const firstName = formData.get("firstName") as string;
+        const lastName = formData.get("lastName") as string;
+
+        if (password !== passwordConfirmation) {
+            toast.error("Passwords do not match");
+            return;
+        }
+
+        signUpMutation.mutate({
+            firstName,
+            lastName,
+            email,
+            password,
+        });
+    };
+
+    const handleGoogleLogin = () => {
+        // googleLoginMutation.mutate();
+    };
+
+    const handleGithubLogin = () => {
+        // githubLoginMutation.mutate();
     };
 
     return (
-        <div className="space-y-6">
-            <div className="text-center">
-                <h1 className="text-2xl font-bold">Create an account</h1>
-                <p className="text-gray-600">Join us today</p>
-            </div>
+        <form
+            className="w-full h-svh flex items-center justify-center"
+            onSubmit={handleSubmit}
+        >
+            <Card className="z-50 rounded-md rounded-t-none max-w-md">
+                <CardHeader>
+                    <CardTitle className="text-lg md:text-xl">Sign Up</CardTitle>
+                    <CardDescription className="text-xs md:text-sm">
+                        Enter your information to create an account
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid gap-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="grid gap-2">
+                                <Label htmlFor="first-name">First name</Label>
+                                <Input
+                                    id="first-name"
+                                    placeholder="John"
+                                    required
+                                    name="firstName"
+                                    autoFocus
+                                />
+                            </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                        Full Name
-                    </label>
-                    <input
-                        id="name"
-                        type="text"
-                        required
-                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                    />
-                </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="last-name">Last name</Label>
+                                <Input
+                                    id="last-name"
+                                    placeholder="Snow"
+                                    required
+                                    name="lastName"
+                                />
+                            </div>
+                        </div>
 
-                <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                        Email
-                    </label>
-                    <input
-                        id="email"
-                        type="email"
-                        required
-                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="email">Email</Label>
+                            <Input
+                                id="email"
+                                type="email"
+                                placeholder="m@example.com"
+                                required
+                                name="email"
+                            />
+                        </div>
 
-                <div>
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                        Password
-                    </label>
-                    <input
-                        id="password"
-                        type="password"
-                        required
-                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="password">Password</Label>
+                            <Input
+                                id="password"
+                                type="password"
+                                autoComplete="new-password"
+                                placeholder="Password"
+                                name="password"
+                                required
+                            />
+                        </div>
 
-                <button
-                    type="submit"
-                    className="w-full rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-                >
-                    Create Account
-                </button>
-            </form>
+                        <div className="grid gap-2">
+                            <Label htmlFor="password">Confirm Password</Label>
+                            <Input
+                                id="password_confirmation"
+                                type="password"
+                                name="passwordConfirmation"
+                                autoComplete="new-password"
+                                placeholder="Confirm Password"
+                                required
+                            />
+                        </div>
 
-            <p className="text-center text-sm text-gray-600">
-                Already have an account?{' '}
-                <Link href="/login" className="text-blue-600 hover:text-blue-700">
-                    Sign in
-                </Link>
-            </p>
-        </div>
+                        <Button
+                            type="submit"
+                            className="w-full"
+                            disabled={signUpMutation.isPending}
+                        >
+                            {signUpMutation.isPending && <Spinner />}
+                            Create an account
+                        </Button>
+                    </div>
+
+                    <Link
+                        href="/login"
+                        className={buttonVariants({
+                            variant: "link",
+                            className: "text-left pl-0 w-fit my-2.5",
+                        })}
+                    >
+                        Already have an account? Sign in
+                    </Link>
+
+                    <div className="space-y-2">
+                        <Button
+                            variant="outline"
+                            className={cn("w-full gap-2")}
+                            type="button"
+                            onClick={handleGoogleLogin}
+                        // disabled={googleLoginMutation.isPending}
+                        >
+                            {/* {googleLoginMutation.isPending ? <Spinner /> : <GoogleIcon />} */}
+                            Sign up with Google
+                        </Button>
+                        <Button
+                            variant="outline"
+                            className={cn("w-full gap-2")}
+                            type="button"
+                            onClick={handleGithubLogin}
+                        // disabled={githubLoginMutation.isPending}
+                        >
+                            {/* {githubLoginMutation.isPending ? <Spinner /> : <GithubIcon />} */}
+                            Sign up with Github
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+        </form>
     );
 } 
