@@ -18,35 +18,56 @@ const AppContext = createContext<AppContextValues>({} as AppContextValues);
  * @returns The stored theme or default theme
  */
 const getStoredTheme = (): Theme => {
-  if (typeof window === 'undefined') return 'dark';
+  if (typeof window === 'undefined') return 'system';
 
   try {
     const storedTheme = localStorage.getItem("theme") as Theme | null;
-    return storedTheme || 'dark';
+    return storedTheme || 'system';
   } catch (error) {
     console.error('Error accessing localStorage:', error);
-    return 'dark';
+    return 'system';
   }
+};
+
+/**
+ * Gets the system theme preference
+ * @returns The system theme preference
+ */
+const getSystemTheme = (): "light" | "dark" => {
+  if (typeof window === 'undefined') return 'light';
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 };
 
 export function AppContextProvider(props: React.PropsWithChildren) {
   // Initialize theme state with a default value
-  const [theme, setTheme] = useState<Theme>('dark');
+  const [theme, setTheme] = useState<Theme>('system');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   // Load theme from localStorage after component mounts
   useEffect(() => {
-    setTheme(getStoredTheme());
+    const storedTheme = getStoredTheme();
+    setTheme(storedTheme);
+
+    // Apply initial theme
+    if (storedTheme === 'system') {
+      const systemTheme = getSystemTheme();
+      if (systemTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    } else if (storedTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   }, []);
 
   const updateTheme = (value: Theme) => {
     const htmlElement = document.documentElement;
 
     if (value === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
-        ? "dark"
-        : "light";
+      const systemTheme = getSystemTheme();
       if (systemTheme === "dark") {
         htmlElement.classList.add("dark");
       } else {
