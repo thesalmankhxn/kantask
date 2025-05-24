@@ -1,13 +1,14 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
+import { cookies } from "next/headers";
 
 /**
  * Middleware function to handle authentication and route protection
  * @param request - The incoming request object
  */
 export function middleware(request: NextRequest) {
-  // Get the pathname of the request
+  const protectedPaths = ["/workspace", "/settings"];
   const path = request.nextUrl.pathname;
+  const isProtectedPath = protectedPaths.includes(path);
 
   // Define public paths that don't require authentication
   const isPublicPath = path === "/login" || path === "/signup";

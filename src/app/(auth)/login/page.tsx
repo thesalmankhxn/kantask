@@ -30,7 +30,7 @@ export default function LoginPage() {
             className="w-full h-svh flex items-center justify-center"
         // onSubmit={handleUserPasswordLogin}
         >
-            <Card className="max-w-md">
+            <Card className="max-w-sm w-full">
                 <CardHeader>
                     <CardTitle className="text-lg md:text-xl">Sign In</CardTitle>
                     <CardDescription className="text-xs md:text-sm">

@@ -1,5 +1,6 @@
+import { AppProviders } from "@/components/providers/app-context-provider";
+import { SessionProvider } from "@/components/providers/session-provider";
 import { TanstackProvider } from "@/components/providers/tanstack-provider";
-import { Providers } from "@/components/providers/app-context-provider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -29,11 +30,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <TanstackProvider>
-          <Providers>
-            {children}
-          </Providers>
-        </TanstackProvider>
+        <SessionProvider>
+          <TanstackProvider>
+            <AppProviders>
+              {children}
+            </AppProviders>
+          </TanstackProvider>
+        </SessionProvider>
       </body>
     </html>
   );
