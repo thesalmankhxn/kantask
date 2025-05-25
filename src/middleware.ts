@@ -1,36 +1,41 @@
-import { NextResponse, type NextRequest } from "next/server";
-import { cookies } from "next/headers";
+import { getToken } from "next-auth/jwt";
+import { withAuth } from "next-auth/middleware";
+import { NextResponse } from "next/server";
 
-/**
- * Middleware function to handle authentication and route protection
- * @param request - The incoming request object
- */
-export function middleware(request: NextRequest) {
-  const protectedPaths = ["/workspace", "/settings"];
-  const path = request.nextUrl.pathname;
-  const isProtectedPath = protectedPaths.includes(path);
+export default withAuth(
+  async function middleware(req) {
+    const protectedPaths = ["/workspace", "/settings"];
+    const path = req.nextUrl.pathname;
+    const isProtectedPath = protectedPaths.includes(path);
+    const token = await getToken({ req });
 
-  // Define public paths that don't require authentication
-  const isPublicPath = path === "/login" || path === "/signup";
+    const isAuth = !!token;
 
-  // Get the token from the cookies
-  const token = request.cookies.get("token")?.value || "";
+    if (isAuth) {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
 
-  // Redirect logic
-  if (isPublicPath && token) {
-    // If user is logged in and tries to access auth pages, redirect to workspace
-    return NextResponse.redirect(new URL("/workspace", request.url));
+    if (!isAuth) {
+      let from = req.nextUrl.pathname;
+      if (req.nextUrl.search) {
+        from += req.nextUrl.search;
+      }
+
+      return NextResponse.redirect(new URL(`/login`, req.url));
+    }
+  },
+  {
+    callbacks: {
+      async authorized() {
+        return true;
+      },
+    },
   }
-
-  if (!isPublicPath && !token) {
-    // If user is not logged in and tries to access protected pages, redirect to login
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
-}
+);
 
 /**
  * Configure which paths the middleware should run on
  */
 export const config = {
-  matcher: ["/", "/login", "/signup", "/workspace/:path*", "/settings/:path*"],
+  matcher: ["/", "/workspace/:path*", "/settings/:path*"],
 };

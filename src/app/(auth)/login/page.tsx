@@ -6,11 +6,14 @@ import { GithubIcon, GoogleIcon } from "@/components/ui/icons";
 import { Input } from '@/components/ui/input';
 import { Label } from "@/components/ui/label";
 import { Spinner } from '@/components/ui/spinner';
+import { getOrigin } from '@/lib/constants';
 import { cn } from '@/lib/utils';
+import { useGithubLoginMutation } from '@/queries/authentication';
+import { useGoogleLoginMutation } from '@/queries/authentication';
 import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
-
 
 /**
  * Login page component that handles user authentication
@@ -18,11 +21,30 @@ import { useState } from 'react';
 export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const searchParams = useSearchParams();
+
+    // Get the redirect path from search params, defaulting to '/'
+    const redirectPath = searchParams.get('redirect') || '/';
+    const callbackURL = `${getOrigin()}${redirectPath}`;
+
+    const googleLoginMutation = useGoogleLoginMutation();
+
+    const githubLoginMutation = useGithubLoginMutation();
+
+    console.log(callbackURL);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         // TODO: Implement login logic
         console.log('Login attempt:', { email, password });
+    };
+
+    const handleGoogleLogin = () => {
+        googleLoginMutation.mutate();
+    };
+
+    const handleGithubLogin = () => {
+        githubLoginMutation.mutate();
     };
 
     return (
@@ -90,6 +112,7 @@ export default function LoginPage() {
                         // disabled={userPasswordLoginMutation.isPending}
                         >
                             {/* {userPasswordLoginMutation.isPending ? <Spinner /> : "Login"} */}
+                            Login
                         </Button>
                     </div>
 
@@ -112,20 +135,20 @@ export default function LoginPage() {
                             variant="outline"
                             className={cn("w-full gap-2")}
                             type="button"
-                        // onClick={handleGoogleLogin}
-                        // disabled={googleLoginMutation.isPending}
+                            onClick={handleGoogleLogin}
+                            disabled={googleLoginMutation.isPending}
                         >
-                            {/* {googleLoginMutation.isPending ? <Spinner /> : <GoogleIcon />} */}
+                            {googleLoginMutation.isPending ? <Spinner /> : <GoogleIcon />}
                             Sign in with Google
                         </Button>
                         <Button
                             variant="outline"
                             className={cn("w-full gap-2")}
                             type="button"
-                        // onClick={handleGithubLogin}
-                        // disabled={githubLoginMutation.isPending}
+                            onClick={handleGithubLogin}
+                            disabled={githubLoginMutation.isPending}
                         >
-                            {/* {githubLoginMutation.isPending ? <Spinner /> : <GithubIcon />} */}
+                            {githubLoginMutation.isPending ? <Spinner /> : <GithubIcon />}
                             Sign in with Github
                         </Button>
                     </div>

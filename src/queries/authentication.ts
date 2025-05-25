@@ -1,27 +1,22 @@
-import {useMutation} from "@tanstack/react-query";
-import {authClient} from "@/lib/auth";
-import {handleAuthResponse} from "@/lib/utils";
+import { handleAuthResponse } from "@/lib/utils";
+import { useMutation } from "@tanstack/react-query";
+import { signIn, SignInResponse } from "next-auth/react";
 
-export function useGoogleLoginMutation({callbackURL}: {callbackURL: string}) {
+export function useGoogleLoginMutation() {
   return useMutation({
     mutationFn: async () => {
-      const res = await authClient.signIn.social({
-        provider: "google",
-        callbackURL,
-      });
-      return handleAuthResponse(res);
+      const res = await signIn("google");
+      return handleAuthResponse(res as SignInResponse);
     },
   });
 }
 
-export function useGithubLoginMutation({callbackURL}: {callbackURL: string}) {
+export function useGithubLoginMutation() {
   return useMutation({
     mutationFn: async () => {
-      const res = await authClient.signIn.social({
-        provider: "github",
-        callbackURL,
-      });
-      return handleAuthResponse(res);
+      const res = await signIn("github");
+      console.log("GITHUB res", res);
+      return handleAuthResponse(res as SignInResponse);
     },
   });
 }

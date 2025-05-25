@@ -2,6 +2,7 @@ import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { ulid } from "ulid";
 import type { ClassValue } from "clsx";
+import { SignInResponse } from "next-auth/react";
 
 export function cn(...inputs: Array<ClassValue>) {
   return twMerge(clsx(inputs));
@@ -24,15 +25,16 @@ export interface AuthErrorType {
   statusText: string;
 }
 
-export function handleAuthResponse<T>(response: {
-  data: T;
-  error: AuthErrorType | null;
-}): T {
+export function handleAuthResponse(response: SignInResponse) {
   if (response.error) {
-    throw new AuthError(response.error);
+    throw new AuthError({
+      message: response.error,
+      status: 400,
+      statusText: response.error,
+    });
   }
 
-  return response.data;
+  return response;
 }
 
 export class UserViewableError {
