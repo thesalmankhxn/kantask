@@ -1,9 +1,11 @@
 import { getToken } from "next-auth/jwt";
-import { withAuth } from "next-auth/middleware";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import NextAuth from "next-auth";
+import authConfig from "@/lib/auth.config";
 
-export default withAuth(
-  async function middleware(req) {
+const { auth } = NextAuth(authConfig);
+export default auth(
+  async function middleware(req: NextRequest) {
     const protectedPaths = ["/workspace", "/settings"];
     const path = req.nextUrl.pathname;
     const isProtectedPath = protectedPaths.includes(path);

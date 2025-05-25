@@ -1,13 +1,7 @@
-import config from "@/lib/config";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { config } from "dotenv";
+import { drizzle } from "drizzle-orm/neon-http";
+import { neon } from "@neondatabase/serverless";
 
-let sslmode = "";
-
-if (config.APP_ENV === "production") {
-  sslmode = "?sslmode=require";
-}
-
-export const queryClient = postgres(process.env.DATABASE_URL + sslmode);
-
-export const db = drizzle(queryClient, { logger: true });
+config({ path: ".env.local" });
+const sql = neon(process.env.DATABASE_URL!);
+export const db = drizzle(sql, { logger: true });

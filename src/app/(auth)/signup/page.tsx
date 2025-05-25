@@ -12,14 +12,12 @@ import { GithubIcon } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
-import { getOrigin } from '@/lib/constants';
 import { toast } from 'sonner';
 /**
  * Signup page component that handles user registration
  */
 export default function SignupPage() {
     const router = useRouter();
-    const callbackURL = getOrigin();
 
     // useLoggedInRedirect();
 

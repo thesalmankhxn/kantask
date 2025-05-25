@@ -6,7 +6,6 @@ import { GithubIcon, GoogleIcon } from "@/components/ui/icons";
 import { Input } from '@/components/ui/input';
 import { Label } from "@/components/ui/label";
 import { Spinner } from '@/components/ui/spinner';
-import { getOrigin } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { useGithubLoginMutation } from '@/queries/authentication';
 import { useGoogleLoginMutation } from '@/queries/authentication';
@@ -21,17 +20,11 @@ import { useState } from 'react';
 export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const searchParams = useSearchParams();
-
-    // Get the redirect path from search params, defaulting to '/'
-    const redirectPath = searchParams.get('redirect') || '/';
-    const callbackURL = `${getOrigin()}${redirectPath}`;
 
     const googleLoginMutation = useGoogleLoginMutation();
 
     const githubLoginMutation = useGithubLoginMutation();
 
-    console.log(callbackURL);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
