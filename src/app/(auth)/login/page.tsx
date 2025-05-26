@@ -11,7 +11,6 @@ import { useGithubLoginMutation } from '@/queries/authentication';
 import { useGoogleLoginMutation } from '@/queries/authentication';
 import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
 /**
@@ -22,7 +21,6 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
 
     const googleLoginMutation = useGoogleLoginMutation();
-
     const githubLoginMutation = useGithubLoginMutation();
 
 
@@ -62,6 +60,8 @@ export default function LoginPage() {
                                 name="email"
                                 placeholder="m@example.com"
                                 required
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                             />
                         </div>
 
@@ -80,21 +80,22 @@ export default function LoginPage() {
                             <div className="flex gap-1">
                                 <Input
                                     id="password"
-                                    // type={showPassword ? "text" : "password"}
+                                    type="password"
                                     placeholder="password"
                                     autoComplete="password"
                                     name="password"
                                     required
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
                                 />
                                 <Button
                                     variant="outline"
                                     type="button"
-                                    // onClick={() => setShowPassword(!showPassword)}
                                     size="icon"
                                     tabIndex={-1}
                                     className="px-2"
                                 >
-                                    {/* {showPassword ? <Eye /> : <EyeOff />} */}
+                                    <EyeOff />
                                 </Button>
                             </div>
                         </div>
@@ -102,9 +103,8 @@ export default function LoginPage() {
                         <Button
                             type="submit"
                             className="w-full"
-                        // disabled={userPasswordLoginMutation.isPending}
+                            onClick={handleSubmit}
                         >
-                            {/* {userPasswordLoginMutation.isPending ? <Spinner /> : "Login"} */}
                             Login
                         </Button>
                     </div>

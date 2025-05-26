@@ -1,58 +1,25 @@
 import { db } from "@/db";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
-import NextAuth, { User } from "next-auth";
+import NextAuth from "next-auth";
 import authConfig from "./auth.config";
-import { eq } from "drizzle-orm";
-import { users } from "@/db/schema";
+import config from "./config";
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
   adapter: DrizzleAdapter(db),
+  secret: config.NEXTAUTH_SECRET!,
+  session: {
+    strategy: "database",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
   callbacks: {
-    async session({ session, token }) {
-      if (token) {
-        session.user!.id = token.id;
-        session.user!.name = token.name;
-        session.user!.email = token.email!;
-        session.user!.image = token.picture;
-      }
-
+    async session({ session }) {
       return session;
     },
-    async jwt({ token, user }) {
-      const [dbUser] = await db
-        .select()
-        .from(users)
-        .where(eq(users.email, token.email || ""))
-        .limit(1);
-
-      if (!dbUser) {
-        if (user) {
-          token.id = user?.id!;
-        }
-        return token;
-      }
-
-      return {
-        id: dbUser.id,
-        name: dbUser.name,
-        email: dbUser.email,
-        picture: dbUser.image,
-      };
+  },
+  events: {
+    async signIn({ user }) {
+      console.log("HOLAAAAAA!!!", user);
     },
   },
   ...authConfig,
 });
-
-declare module "next-auth/jwt" {
-  interface JWT {
-    id: string;
-  }
-}
-
-declare module "next-auth" {
-  interface Session {
-    user: User & {
-      id: string;
-    };
-  }
-}
