@@ -1,166 +1,92 @@
-import { relations } from "drizzle-orm";
-import * as t from "drizzle-orm/pg-core";
-import { pgTable } from "drizzle-orm/pg-core";
 import {
-  account as accountsTable,
-  invitation as invitationsTable,
-  member as membersTable,
-  organization as organizationsTable,
-  user as usersTable,
-} from "./auth-schema";
-import { commonColumns } from "./helpers";
+  boolean,
+  integer,
+  pgTable,
+  primaryKey,
+  text,
+  timestamp,
+} from "drizzle-orm/pg-core";
+import type { AdapterAccountType } from "next-auth/adapters";
 
-export const organizationsRelations = relations(
-  organizationsTable,
-  ({ many }) => ({
-    invitations: many(invitationsTable),
-    members: many(membersTable),
-    boards: many(boardsTable),
-    columns: many(columnsTable),
-    tasks: many(tasksTable),
-    notes: many(notesTable),
-  })
-);
-
-export const usersRelations = relations(usersTable, ({ many }) => ({
-  members: many(membersTable),
-  invitations: many(invitationsTable),
-  accounts: many(accountsTable),
-  boards: many(boardsTable),
-  columns: many(columnsTable),
-  tasks: many(tasksTable),
-  notes: many(notesTable),
-}));
-
-export const accountRelations = relations(accountsTable, ({ one }) => ({
-  user: one(usersTable, {
-    fields: [accountsTable.userId],
-    references: [usersTable.id],
-  }),
-}));
-
-export const memberRelations = relations(membersTable, ({ one }) => ({
-  organization: one(organizationsTable, {
-    fields: [membersTable.organizationId],
-    references: [organizationsTable.id],
-  }),
-  user: one(usersTable, {
-    fields: [membersTable.userId],
-    references: [usersTable.id],
-  }),
-}));
-
-export const invitationRelations = relations(invitationsTable, ({ one }) => ({
-  organization: one(organizationsTable, {
-    fields: [invitationsTable.organizationId],
-    references: [organizationsTable.id],
-  }),
-  inviter: one(usersTable, {
-    fields: [invitationsTable.inviterId],
-    references: [usersTable.id],
-  }),
-}));
-
-export const boardsTable = pgTable("boards", {
-  id: t.varchar({ length: 26 }).primaryKey(),
-  name: t.varchar({ length: 255 }).notNull(),
-  color: t.varchar({ length: 255 }),
-  slug: t.text().notNull(),
-  ...commonColumns,
+export const users = pgTable("user", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  name: text("name"),
+  email: text("email").unique(),
+  emailVerified: timestamp("emailVerified", { mode: "date" }),
+  image: text("image"),
 });
 
-export const boardsRelations = relations(boardsTable, ({ one, many }) => ({
-  organization: one(organizationsTable, {
-    fields: [boardsTable.organizationId],
-    references: [organizationsTable.id],
-  }),
-  creator: one(usersTable, {
-    fields: [boardsTable.creatorId],
-    references: [usersTable.id],
-  }),
-  columns: many(columnsTable),
-}));
-
-export const columnsTable = pgTable(
-  "columns",
+export const accounts = pgTable(
+  "account",
   {
-    id: t.varchar({ length: 26 }).primaryKey(),
-    name: t.varchar({ length: 100 }).notNull(),
-    boardId: t
-      .varchar({ length: 26 })
-      .references(() => boardsTable.id, { onDelete: "cascade" })
-      .notNull(),
-    position: t.integer().notNull(),
-    ...commonColumns,
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    type: text("type").$type<AdapterAccountType>().notNull(),
+    provider: text("provider").notNull(),
+    providerAccountId: text("providerAccountId").notNull(),
+    refresh_token: text("refresh_token"),
+    access_token: text("access_token"),
+    expires_at: integer("expires_at"),
+    token_type: text("token_type"),
+    scope: text("scope"),
+    id_token: text("id_token"),
+    session_state: text("session_state"),
   },
-  (table) => ({
-    boardIdx: t.index("column_board_idx").on(table.boardId),
-  })
+  (account) => [
+    {
+      compoundKey: primaryKey({
+        columns: [account.provider, account.providerAccountId],
+      }),
+    },
+  ]
 );
 
-export const columnsRelations = relations(columnsTable, ({ one, many }) => ({
-  board: one(boardsTable, {
-    fields: [columnsTable.boardId],
-    references: [boardsTable.id],
-  }),
-  organization: one(organizationsTable, {
-    fields: [columnsTable.organizationId],
-    references: [organizationsTable.id],
-  }),
-  creator: one(usersTable, {
-    fields: [columnsTable.creatorId],
-    references: [usersTable.id],
-  }),
-  tasks: many(tasksTable),
-}));
-
-export const tasksTable = pgTable(
-  "tasks",
-  {
-    id: t.varchar({ length: 26 }).primaryKey(),
-    name: t.text().notNull(),
-    content: t.text(),
-    columnId: t
-      .varchar({ length: 26 })
-      .references(() => columnsTable.id, { onDelete: "cascade" })
-      .notNull(),
-    position: t.doublePrecision().notNull(),
-    ...commonColumns,
-  },
-  (table) => ({
-    columnIdx: t.index("column_id_idx").on(table.columnId),
-  })
-);
-
-export const tasksRelations = relations(tasksTable, ({ one }) => ({
-  column: one(columnsTable, {
-    fields: [tasksTable.columnId],
-    references: [columnsTable.id],
-  }),
-  organization: one(organizationsTable, {
-    fields: [tasksTable.organizationId],
-    references: [organizationsTable.id],
-  }),
-  creator: one(usersTable, {
-    fields: [tasksTable.creatorId],
-    references: [usersTable.id],
-  }),
-}));
-
-export const notesTable = pgTable("notes", {
-  id: t.varchar({ length: 26 }).primaryKey(),
-  name: t.varchar({ length: 255 }).notNull(),
-  content: t.text().notNull(),
-  ...commonColumns,
+export const sessions = pgTable("session", {
+  sessionToken: text("sessionToken").primaryKey(),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  expires: timestamp("expires", { mode: "date" }).notNull(),
 });
 
-export const notesRelations = relations(notesTable, ({ one }) => ({
-  organization: one(organizationsTable, {
-    fields: [notesTable.organizationId],
-    references: [organizationsTable.id],
-  }),
-  creator: one(usersTable, {
-    fields: [notesTable.creatorId],
-    references: [usersTable.id],
-  }),
-}));
+export const verificationTokens = pgTable(
+  "verificationToken",
+  {
+    identifier: text("identifier").notNull(),
+    token: text("token").notNull(),
+    expires: timestamp("expires", { mode: "date" }).notNull(),
+  },
+  (verificationToken) => [
+    {
+      compositePk: primaryKey({
+        columns: [verificationToken.identifier, verificationToken.token],
+      }),
+    },
+  ]
+);
+
+export const authenticators = pgTable(
+  "authenticator",
+  {
+    credentialID: text("credentialID").notNull().unique(),
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    providerAccountId: text("providerAccountId").notNull(),
+    credentialPublicKey: text("credentialPublicKey").notNull(),
+    counter: integer("counter").notNull(),
+    credentialDeviceType: text("credentialDeviceType").notNull(),
+    credentialBackedUp: boolean("credentialBackedUp").notNull(),
+    transports: text("transports"),
+  },
+  (authenticator) => [
+    {
+      compositePK: primaryKey({
+        columns: [authenticator.userId, authenticator.credentialID],
+      }),
+    },
+  ]
+);
