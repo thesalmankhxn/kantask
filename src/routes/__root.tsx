@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import * as React from 'react'
+import { ClerkProvider } from '@clerk/tanstack-react-start'
 import { AppContextProvider } from '~/state/app-state'
 import appCss from '~/styles/app.css?url'
 import { seo } from '~/utils/seo'
@@ -62,12 +63,30 @@ export const Route = createRootRoute({
 })
 
 function RootComponent() {
+  const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+  const signInUrl = import.meta.env.VITE_CLERK_SIGN_IN_URL;
+  const signUpUrl = import.meta.env.VITE_CLERK_SIGN_UP_URL;
+  const afterSignInUrl = import.meta.env.VITE_CLERK_AFTER_SIGN_IN_URL;
+  const afterSignUpUrl = import.meta.env.VITE_CLERK_AFTER_SIGN_UP_URL;
+
+  if (!publishableKey) {
+    throw new Error("Missing Clerk Publishable Key. Please set VITE_CLERK_PUBLISHABLE_KEY in your .env.local file.")
+  }
+
   return (
-    <AppContextProvider>
-      <RootDocument>
-        <Outlet />
-      </RootDocument>
-    </AppContextProvider>
+    <ClerkProvider
+      publishableKey={publishableKey}
+      signInUrl={signInUrl}
+      signUpUrl={signUpUrl}
+      afterSignInUrl={afterSignInUrl}
+      afterSignUpUrl={afterSignUpUrl}
+    >
+      <AppContextProvider>
+        <RootDocument>
+          <Outlet />
+        </RootDocument>
+      </AppContextProvider>
+    </ClerkProvider>
   )
 }
 

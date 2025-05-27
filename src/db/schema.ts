@@ -198,3 +198,77 @@ export const authenticators = pgTable(
     }),
   })
 );
+
+/**
+ * Represents the 'organizations' table in the database.
+ */
+export const organizations = pgTable("organization", {
+  /**
+   * The unique identifier for the organization (UUID, auto-generated).
+   */
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  /**
+   * The name of the organization.
+   */
+  name: text("name").notNull(),
+  /**
+   * Timestamp indicating when the organization was created.
+   */
+  createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+  /**
+   * Timestamp indicating when the organization was last updated.
+   */
+  updatedAt: timestamp("updatedAt", { mode: "date" }).defaultNow().notNull(),
+});
+
+/**
+ * Represents the 'session' table for managing user sessions with JWT and database persistence.
+ */
+export const session = pgTable("session_hybrid", {
+  // Renamed to session_hybrid to avoid conflict with existing sessions table
+  /**
+   * The unique identifier for the session (UUID, auto-generated).
+   */
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  /**
+   * The unique session token.
+   */
+  token: text("token").unique().notNull(),
+  /**
+   * Timestamp indicating when the session expires.
+   */
+  expiresAt: timestamp("expiresAt", { mode: "date" }).notNull(),
+  /**
+   * Foreign key referencing the 'users' table.
+   */
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  /**
+   * Foreign key referencing the 'organizations' table for the active organization.
+   */
+  activeOrganizationId: text("activeOrganizationId").references(
+    () => organizations.id,
+    { onDelete: "set null" }
+  ), // Or cascade, depending on desired behavior
+  /**
+   * IP address of the user when the session was created.
+   */
+  ipAddress: text("ipAddress"),
+  /**
+   * User agent string of the user when the session was created.
+   */
+  userAgent: text("userAgent"),
+  /**
+   * Timestamp indicating when the session was created.
+   */
+  createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+  /**
+   * Timestamp indicating when the session was last updated.
+   */
+  updatedAt: timestamp("updatedAt", { mode: "date" }).defaultNow().notNull(),
+});

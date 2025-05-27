@@ -11,6 +11,7 @@
     "db:migrate": "dotenv -e .env.local -- node --import tsx src/db/migrate.ts"
   },
   "dependencies": {
+    "@clerk/tanstack-react-start": "^0.15.6",
     "@hello-pangea/dnd": "^18.0.1",
     "@milkdown/kit": "^7.10.3",
     "@milkdown/react": "^7.10.3",
