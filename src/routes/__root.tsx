@@ -7,10 +7,12 @@ import {
 } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import * as React from 'react'
-import { ClerkProvider } from '@clerk/tanstack-react-start'
+import { ClerkProvider, useAuth, useUser } from '@clerk/tanstack-react-start'
 import { AppContextProvider } from '~/state/app-state'
 import appCss from '~/styles/app.css?url'
 import { seo } from '~/utils/seo'
+import { useServerFn } from '@tanstack/react-start'
+import { handleAuthCallback } from '~/api/auth-callback'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -62,6 +64,54 @@ export const Route = createRootRoute({
   component: RootComponent,
 })
 
+function AuthHandler() {
+  const { isSignedIn, isLoaded: isAuthLoaded } = useAuth();
+  const { user, isLoaded: isUserLoaded } = useUser();
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+
+  const callAuthCallback = useServerFn(handleAuthCallback);
+
+  React.useEffect(() => {
+    const performAuthCallback = async () => {
+      if (isAuthLoaded && isUserLoaded && isSignedIn && user) {
+        const existingToken = localStorage.getItem('auth-token');
+        if (!existingToken) {
+          setIsLoading(true);
+          setError(null);
+          try {
+            console.log('Calling handleAuthCallback for user:', user.id);
+            const result = await callAuthCallback();
+            if (result.jwt) {
+              localStorage.setItem('auth-token', result.jwt);
+              console.log('JWT stored in localStorage.');
+            } else {
+              throw new Error('JWT not received from auth callback.');
+            }
+          } catch (e: any) {
+            console.error('Error during auth callback:', e);
+            setError(e.message || 'Failed to complete authentication setup.');
+          } finally {
+            setIsLoading(false);
+          }
+        }
+      }
+    };
+
+    performAuthCallback();
+  }, [isSignedIn, isAuthLoaded, user, isUserLoaded, callAuthCallback]);
+
+  if (isLoading) {
+    return <div>Finalizing authentication...</div>;
+  }
+
+  if (error) {
+    return <div>Error setting up session: {error} <button onClick={() => { localStorage.removeItem('auth-token'); window.location.reload(); }}>Retry</button></div>;
+  }
+
+  return null;
+}
+
 function RootComponent() {
   const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
   const signInUrl = import.meta.env.VITE_CLERK_SIGN_IN_URL;
@@ -83,6 +133,7 @@ function RootComponent() {
     >
       <AppContextProvider>
         <RootDocument>
+          <AuthHandler />
           <Outlet />
         </RootDocument>
       </AppContextProvider>
