@@ -1,16 +1,16 @@
-import {Moon, Sun} from "lucide-react";
-import {useAppContext} from "@/state/app-state";
+import { Moon, Sun } from "lucide-react";
+import { useAppContext } from "src/state/app-state";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {Button} from "@/components/ui/button";
+} from "src/components/ui/dropdown-menu";
+import { Button } from "src/components/ui/button";
 
 export function ThemeToggle() {
-  const {theme, updateTheme} = useAppContext();
+  const { theme, updateTheme } = useAppContext();
 
   return (
     <DropdownMenu>

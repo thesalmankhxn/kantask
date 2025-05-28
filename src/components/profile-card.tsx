@@ -1,41 +1,41 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { Loader2, User } from "lucide-react"
-import { toast } from "sonner"
-import { updateUser } from "src/services/auth.api"
-import { authQueries } from "src/services/queries"
-import { useAuthenticatedUser } from "~/lib/auth/client"
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
-import { Button } from "./ui/button"
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Loader2, User } from "lucide-react";
+import { toast } from "sonner";
+import { updateUser } from "src/services/auth.api";
+import { authQueries } from "src/services/queries";
+import { useAuthenticatedUser } from "~/lib/auth/client";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Button } from "./ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "./ui/card"
-import { Input } from "./ui/input"
-import { Label } from "./ui/label"
+} from "./ui/card";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 
 export function ProfileCard() {
-  const { user } = useAuthenticatedUser()
-  const queryClient = useQueryClient()
+  const { user } = useAuthenticatedUser();
+  const queryClient = useQueryClient();
 
   const updateUserMutation = useMutation({
     mutationFn: updateUser,
     onSuccess: () => {
-      toast.success("Your profile has been updated.")
-      queryClient.invalidateQueries(authQueries.user())
+      toast.success("Your profile has been updated.");
+      queryClient.invalidateQueries(authQueries.user());
     },
-  })
+  });
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    const formData = new FormData(e.currentTarget)
-    const username = formData.get("username") as string
+    const formData = new FormData(e.currentTarget);
+    const username = formData.get("username") as string;
 
-    updateUserMutation.mutate({ data: { username } })
-  }
+    updateUserMutation.mutate({ data: { username } });
+  };
 
   return (
     <form onSubmit={onSubmit}>
@@ -56,7 +56,7 @@ export function ProfileCard() {
           <div className="space-y-4">
             <div>
               <Label>
-                Username
+                Name
                 <Input
                   name="username"
                   type="text"
@@ -88,5 +88,5 @@ export function ProfileCard() {
         </CardContent>
       </Card>
     </form>
-  )
+  );
 }

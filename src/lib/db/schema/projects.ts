@@ -1,10 +1,11 @@
 import { pgTable, uuid, text, timestamp } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { tasks } from "./tasks";
+import { workspaces } from "./workspaces";
 
 /**
  * @table projects
- * @description Stores project information. Each project can have multiple tasks.
+ * @description Stores project information. Each project can have multiple tasks and belongs to a workspace.
  */
 export const projects = pgTable("projects", {
   /**
@@ -26,6 +27,15 @@ export const projects = pgTable("projects", {
    */
   description: text("description"),
   /**
+   * @column workspaceId
+   * @type {string} UUID
+   * @description The identifier of the workspace this project belongs to (Foreign Key). This field is required.
+   *              If the referenced workspace is deleted, this project will also be deleted.
+   */
+  workspaceId: uuid("workspace_id")
+    .notNull()
+    .references(() => workspaces.id, { onDelete: "cascade" }),
+  /**
    * @column createdAt
    * @type {Date} Timestamp
    * @description The date and time when the project was created. Defaults to the current timestamp.
@@ -46,12 +56,20 @@ export const projects = pgTable("projects", {
 /**
  * @relation projectRelations
  * @description Defines the relations for the 'projects' table.
- *              A project can have many tasks.
+ *              A project can have many tasks and belongs to one workspace.
  */
-export const projectRelations = relations(projects, ({ many }) => ({
+export const projectRelations = relations(projects, ({ many, one }) => ({
   /**
    * @property tasks
    * @description A list of tasks associated with the project.
    */
   tasks: many(tasks),
+  /**
+   * @property workspace
+   * @description The workspace to which this project belongs.
+   */
+  workspace: one(workspaces, {
+    fields: [projects.workspaceId],
+    references: [workspaces.id],
+  }),
 }));

@@ -1,10 +1,11 @@
-import { DiscordLogoIcon, GitHubLogoIcon } from "@radix-ui/react-icons"
-import { Link } from "@tanstack/react-router"
-import { SignedIn } from "./auth/signed-in"
-import { SignedOut } from "./auth/signed-out"
-import { ButtonLink } from "./button-link"
-import { Navigation } from "./navigation"
-import { UserMenu } from "./user-menu"
+import { GitHubLogoIcon } from "@radix-ui/react-icons";
+import { Link } from "@tanstack/react-router";
+import { SignedIn } from "./auth/signed-in";
+import { SignedOut } from "./auth/signed-out";
+import { ButtonLink } from "./button-link";
+import { Navigation } from "./navigation";
+import { ThemeToggle } from "./ui/theme-toggle";
+import { UserMenu } from "./user-menu";
 
 export const Header = () => {
   return (
@@ -17,19 +18,13 @@ export const Header = () => {
       </div>
       <div className="flex gap-4 items-center">
         <a
-          href="https://github.com/Balastrong/KanTask"
+          href="https://github.com/thesalmankhxn/KanTask"
           target="_blank"
           rel="noreferrer"
         >
           <GitHubLogoIcon />
         </a>
-        <a
-          href="https://discord.gg/bqwyEa6We6"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <DiscordLogoIcon />
-        </a>
+        <ThemeToggle />
         <SignedIn>
           <UserMenu />
         </SignedIn>
@@ -40,5 +35,5 @@ export const Header = () => {
         </SignedOut>
       </div>
     </header>
-  )
-}
+  );
+};
