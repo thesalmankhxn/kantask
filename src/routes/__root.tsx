@@ -1,86 +1,88 @@
+import { QueryClient } from "@tanstack/react-query"
 import {
+  createRootRouteWithContext,
   HeadContent,
-  Link,
   Outlet,
   Scripts,
-  createRootRoute,
-} from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-import * as React from 'react'
-import { AppContextProvider } from '~/state/app-state'
-import appCss from '~/styles/app.css?url'
-import { seo } from '~/utils/seo'
+} from "@tanstack/react-router"
+import * as React from "react"
+import { Header } from "src/components/header"
+import { Toaster } from "src/components/ui/sonner"
+import { authQueries } from "src/services/queries"
+import css from "~/globals.css?url"
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<{
+  queryClient: QueryClient
+}>()({
+  beforeLoad: async ({ context }) => {
+    console.log("beforeLoad called in root route")
+    const userSession = await context.queryClient.fetchQuery(authQueries.user())
+    console.log("User session fetched in beforeLoad:", userSession?.user.name)
+
+    return { userSession: null as any }
+  },
   head: () => ({
     meta: [
       {
-        charSet: 'utf-8',
+        charSet: "utf-8",
       },
       {
-        name: 'viewport',
-        content: 'width=device-width, initial-scale=1',
+        name: "viewport",
+        content: "width=device-width, initial-scale=1",
       },
-      ...seo({
-        title:
-          'TanStack Start | Type-Safe, Client-First, Full-Stack React Framework',
-        description: `TanStack Start is a type-safe, client-first, full-stack React framework. `,
-      }),
+      {
+        title: "KanTask!",
+      },
     ],
     links: [
-      { rel: 'stylesheet', href: appCss },
       {
-        rel: 'apple-touch-icon',
-        sizes: '180x180',
-        href: '/apple-touch-icon.png',
+        rel: "stylesheet",
+        href: css,
       },
       {
-        rel: 'icon',
-        type: 'image/png',
-        sizes: '32x32',
-        href: '/favicon-32x32.png',
+        rel: "icon",
+        type: "image/png",
+        href: "/favicon.png",
       },
-      {
-        rel: 'icon',
-        type: 'image/png',
-        sizes: '16x16',
-        href: '/favicon-16x16.png',
-      },
-      { rel: 'manifest', href: '/site.webmanifest', color: '#fffff' },
-      { rel: 'icon', href: '/favicon.ico' },
     ],
   }),
-  // errorComponent: (props) => {
-  //   return (
-  //     <RootDocument>
-  //       <DefaultCatchBoundary {...props} />
-  //     </RootDocument>
-  //   )
-  // },
-  // notFoundComponent: () => <NotFound />,
   component: RootComponent,
 })
 
 function RootComponent() {
+  console.log("RootComponent rendered")
   return (
-    <AppContextProvider>
-      <RootDocument>
-        <Outlet />
-      </RootDocument>
-    </AppContextProvider>
+    <RootDocument>
+      <Outlet />
+    </RootDocument>
   )
 }
 
+const TanStackRouterDevtools =
+  process.env.NODE_ENV === "production"
+    ? () => null
+    : React.lazy(() =>
+      import("@tanstack/react-router-devtools").then((res) => ({
+        default: res.TanStackRouterDevtools,
+      })),
+    )
+
 function RootDocument({ children }: { children: React.ReactNode }) {
+  console.log("RootDocument rendered")
   return (
     <html>
       <head>
         <HeadContent />
       </head>
       <body>
+        <Header />
+        <hr />
         {children}
-        <TanStackRouterDevtools position="bottom-right" />
         <Scripts />
+        <Toaster />
+        <React.Suspense>
+          <TanStackRouterDevtools />
+        </React.Suspense>
       </body>
     </html>
   )

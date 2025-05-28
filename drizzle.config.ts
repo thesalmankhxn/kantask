@@ -1,18 +1,17 @@
-import { defineConfig } from "drizzle-kit";
+import "dotenv/config"
+import { defineConfig } from "drizzle-kit"
+
+// TODO: Centralize env reading
+const connectionString =
+  process.env.NODE_ENV === "development"
+    ? "postgres://postgres:postgres@db.localtest.me:5432/main"
+    : process.env.DATABASE_URL!
 
 export default defineConfig({
-  dialect: "postgresql", // 'mysql' | 'sqlite' | 'postgresql'
-  schema: "./src/db/schema.ts",
-  out: "./drizzle/migrations", // Directory to output migrations
+  schema: "./src/lib/db/schema",
+  out: "./src/lib/db/migrations",
+  dialect: "postgresql",
   dbCredentials: {
-    // You must provide a connection string for drizzle-kit to connect to your database
-    // This is typically your Neon connection string from .env.local or similar
-    // IMPORTANT: Ensure this is kept secure and not committed to version control if it contains sensitive info.
-    // It's recommended to use an environment variable here.
-    url: process.env.DATABASE_URL!,
+    url: connectionString,
   },
-  // Optionally, you can pass a an verbose: true to see more logs
-  verbose: true,
-  // Optionally, you can pass a strict: true to abort the process if there are any errors
-  strict: true,
-});
+})
