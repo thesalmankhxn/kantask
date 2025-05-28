@@ -1,5 +1,6 @@
 import { redirect } from "@tanstack/react-router";
 import { ProfileCard } from "src/components/profile-card";
+import { Layout } from "~/components/layout";
 import { authQueries } from "~/services/queries";
 
 export const Route = createFileRoute({
@@ -15,5 +16,9 @@ export const Route = createFileRoute({
 });
 
 function RouteComponent() {
-  return <ProfileCard />;
+  return (
+    <Layout>
+      <ProfileCard />
+    </Layout>
+  );
 }
