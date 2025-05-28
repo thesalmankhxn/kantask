@@ -1,44 +1,44 @@
-import { createServerFn } from "@tanstack/react-start"
-import { and, arrayOverlaps, eq, gt, ilike, inArray, or } from "drizzle-orm"
-import { z } from "zod"
-import { db } from "~/lib/db"
-import { eventTable, usersInCommunityTable } from "~/lib/db/schema"
-import { CreateEventSchema, EventFiltersSchema } from "./event.schema"
-import { userRequiredMiddleware } from "./auth.api"
+import { createServerFn } from "@tanstack/react-start";
+import { and, arrayOverlaps, eq, gt, ilike, inArray, or } from "drizzle-orm";
+import { z } from "zod";
+import { db } from "~/lib/db";
+import { eventTable, usersInCommunityTable } from "~/lib/db/schema";
+import { CreateEventSchema, EventFiltersSchema } from "./event.schema";
+import { userRequiredMiddleware } from "./auth.api";
 
 export const getEvents = createServerFn()
   .validator(EventFiltersSchema)
   .handler(async ({ data }) => {
-    const filters = []
+    const filters = [];
 
     if (data.communityDraft == undefined) {
-      filters.push(eq(eventTable.draft, false))
+      filters.push(eq(eventTable.draft, false));
     } else {
-      filters.push(eq(eventTable.draft, data.communityDraft))
+      filters.push(eq(eventTable.draft, data.communityDraft));
     }
 
     if (data.query) {
-      filters.push(ilike(eventTable.name, `%${data.query}%`))
+      filters.push(ilike(eventTable.name, `%${data.query}%`));
     }
 
     if (data.modes && data.modes.length > 0) {
-      filters.push(inArray(eventTable.mode, data.modes))
+      filters.push(inArray(eventTable.mode, data.modes));
     }
 
     if (data.tags && data.tags.length > 0) {
-      filters.push(arrayOverlaps(eventTable.tags, data.tags))
+      filters.push(arrayOverlaps(eventTable.tags, data.tags));
     }
 
     if (data.country) {
-      filters.push(eq(eventTable.country, data.country))
+      filters.push(eq(eventTable.country, data.country));
     }
 
     if (data.hasCfpOpen) {
-      filters.push(gt(eventTable.cfpClosingDate, new Date().toISOString()))
+      filters.push(gt(eventTable.cfpClosingDate, new Date().toISOString()));
     }
 
     if (data.communityId) {
-      filters.push(eq(eventTable.communityId, data.communityId))
+      filters.push(eq(eventTable.communityId, data.communityId));
     }
 
     if (data.startDate) {
@@ -47,17 +47,17 @@ export const getEvents = createServerFn()
           gt(eventTable.date, data.startDate),
           gt(eventTable.dateEnd, data.startDate),
         ),
-      )
+      );
     }
 
-    const whereCondition = filters.length > 0 ? and(...filters) : undefined
+    const whereCondition = filters.length > 0 ? and(...filters) : undefined;
 
     return await db
       .select()
       .from(eventTable)
       .where(whereCondition)
-      .orderBy(eventTable.date)
-  })
+      .orderBy(eventTable.date);
+  });
 
 export const getEvent = createServerFn()
   .validator(
@@ -69,40 +69,40 @@ export const getEvent = createServerFn()
     const [event] = await db
       .select()
       .from(eventTable)
-      .where(eq(eventTable.id, data.id))
+      .where(eq(eventTable.id, data.id));
 
-    return event
-  })
+    return event;
+  });
 
 export const upsertEvent = createServerFn()
   .validator(CreateEventSchema)
   .middleware([userRequiredMiddleware])
   .handler(async ({ data, context: { userSession } }) => {
-    const { id, ...eventData } = data
+    const { id, ...eventData } = data;
 
     if (id == null) {
       const [newEvent] = await db
         .insert(eventTable)
         .values(eventData)
-        .returning()
+        .returning();
 
-      return newEvent
+      return newEvent;
     } else {
       const [event] = await db
         .select()
         .from(eventTable)
-        .where(eq(eventTable.id, id))
+        .where(eq(eventTable.id, id));
 
       if (!event) {
-        throw new Error("Event not found")
+        throw new Error("Event not found");
       }
 
       const unauthorized = () => {
-        throw new Error("You can only edit events from your community!")
-      }
+        throw new Error("You can only edit events from your community!");
+      };
 
       if (!event.communityId) {
-        throw unauthorized()
+        throw unauthorized();
       }
 
       // Check if the user is in the event's community
@@ -114,23 +114,23 @@ export const upsertEvent = createServerFn()
             eq(usersInCommunityTable.userId, userSession.user.id),
             eq(usersInCommunityTable.communityId, event.communityId),
           ),
-        )
+        );
 
       if (userInCommunity.length === 0) {
-        throw unauthorized()
+        throw unauthorized();
       }
 
       // Check if the provided communityId matches the event's communityId
       if (eventData.communityId !== event.communityId) {
-        throw unauthorized()
+        throw unauthorized();
       }
 
       const [updatedEvent] = await db
         .update(eventTable)
         .set(eventData)
         .where(eq(eventTable.id, id))
-        .returning()
+        .returning();
 
-      return updatedEvent
+      return updatedEvent;
     }
-  })
+  });

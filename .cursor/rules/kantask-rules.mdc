@@ -5,7 +5,7 @@ alwaysApply: true
 ---
 # KanTask - Development Instructions
 
-This is a TanStack Start project for a conference hub application. Follow these guidelines when developing for this project.
+This is a TanStack Start project for a project management application. Follow these guidelines when developing for this project.
 
 ## Project Architecture
 
