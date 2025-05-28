@@ -10,6 +10,7 @@ import { Header } from "src/components/header"
 import { Toaster } from "src/components/ui/sonner"
 import { authQueries } from "src/services/queries"
 import css from "~/globals.css?url"
+import { AppContextProvider } from "~/state/app-state"
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient
@@ -70,20 +71,22 @@ const TanStackRouterDevtools =
 function RootDocument({ children }: { children: React.ReactNode }) {
   console.log("RootDocument rendered")
   return (
-    <html>
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <Header />
-        <hr />
-        {children}
-        <Scripts />
-        <Toaster />
-        <React.Suspense>
-          <TanStackRouterDevtools />
-        </React.Suspense>
-      </body>
-    </html>
+    <AppContextProvider>
+      <html>
+        <head>
+          <HeadContent />
+        </head>
+        <body>
+          <Header />
+          <hr />
+          {children}
+          <Scripts />
+          <Toaster />
+          <React.Suspense>
+            <TanStackRouterDevtools />
+          </React.Suspense>
+        </body>
+      </html>
+    </AppContextProvider>
   )
 }

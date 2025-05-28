@@ -1,38 +1,38 @@
-import { format } from "date-fns"
-import { CalendarIcon, FilterIcon, X } from "lucide-react"
-import React from "react"
-import { EventFilters, EventModes } from "src/services/event.schema"
+import { format } from "date-fns";
+import { CalendarIcon, FilterIcon, X } from "lucide-react";
+import React from "react";
+import { EventFilters, EventModes } from "src/services/event.schema";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "~/components/ui/accordion"
-import { Badge } from "~/components/ui/badge"
-import { Button } from "~/components/ui/button"
-import { Calendar } from "~/components/ui/calendar"
-import { Card } from "~/components/ui/card"
-import { Input } from "~/components/ui/input"
-import { Label } from "~/components/ui/label"
+} from "~/components/ui/accordion";
+import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
+import { Calendar } from "~/components/ui/calendar";
+import { Card } from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "~/components/ui/popover"
-import { Separator } from "~/components/ui/separator"
-import { Switch } from "~/components/ui/switch"
-import { formatDate } from "~/lib/date"
-import { Tags } from "./tags"
-import { useEventFilters } from "./useEventFilters"
+} from "~/components/ui/popover";
+import { Separator } from "~/components/ui/separator";
+import { Switch } from "~/components/ui/switch";
+import { formatDate } from "~/lib/date";
+import { Tags } from "./tags";
+import { useEventFilters } from "./useEventFilters";
 
 type Props = {
-  filters: EventFilters
-  onSetFilters: (newFilters: EventFilters) => void
-}
+  filters: EventFilters;
+  onSetFilters: (newFilters: EventFilters) => void;
+};
 
 export const EventFiltersBar = ({ filters, onSetFilters }: Props) => {
   const { query, setQuery, toggleArrayItem, toggleBooleanItem, setFilter } =
-    useEventFilters(filters, onSetFilters)
+    useEventFilters(filters, onSetFilters);
 
   // Count active filters
   const activeFiltersCount = [
@@ -41,12 +41,12 @@ export const EventFiltersBar = ({ filters, onSetFilters }: Props) => {
     !!filters.startDate,
     (filters.modes?.length || 0) > 0,
     (filters.tags?.length || 0) > 0,
-  ].filter(Boolean).length
+  ].filter(Boolean).length;
 
   const clearFilters = () => {
-    onSetFilters({})
-    setQuery("")
-  }
+    onSetFilters({});
+    setQuery("");
+  };
 
   return (
     <Card className="p-4 mb-6 shadow-sm">
@@ -71,8 +71,8 @@ export const EventFiltersBar = ({ filters, onSetFilters }: Props) => {
                   size="sm"
                   variant="ghost"
                   onClick={(e) => {
-                    e.preventDefault()
-                    clearFilters()
+                    e.preventDefault();
+                    clearFilters();
                   }}
                   className="flex items-center gap-1"
                 >
@@ -93,8 +93,8 @@ export const EventFiltersBar = ({ filters, onSetFilters }: Props) => {
                   {filters.query && (
                     <ClearButton
                       onClick={() => {
-                        setQuery("")
-                        setFilter("query", undefined)
+                        setQuery("");
+                        setFilter("query", undefined);
                       }}
                     />
                   )}
@@ -265,8 +265,8 @@ export const EventFiltersBar = ({ filters, onSetFilters }: Props) => {
         </AccordionItem>
       </Accordion>
     </Card>
-  )
-}
+  );
+};
 
 function ClearButton({ onClick }: { onClick: () => void }) {
   return (
@@ -278,5 +278,5 @@ function ClearButton({ onClick }: { onClick: () => void }) {
     >
       <X className="h-3 w-3" />
     </Button>
-  )
+  );
 }

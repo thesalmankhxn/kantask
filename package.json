@@ -65,8 +65,8 @@
   },
   "devDependencies": {
     "@tanstack/react-router-devtools": "^1.121.0-alpha.14",
-    "@types/react": "^18.3.20",
-    "@types/react-dom": "^18.3.6",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
     "drizzle-kit": "^0.31.1",
     "tailwindcss": "^4.1.4",
     "tsx": "^4.19.4",
