@@ -24,11 +24,12 @@ This is a TanStack Start project for a project management application. Follow th
 
 ## Code Organization
 
-- `/app/routes/` - All route components
-- `/app/components/` - Reusable React components
-- `/app/services/` - API service functions organized by domain (auth, events, etc.)
-- `/app/lib/` - Utility functions and configurations
-- `/app/components/ui/` - shadcn/ui components
+- `/src/routes/` - All route components
+- `/src/components/` - Reusable React components
+- `/src/services/` - API service functions organized by domain (auth, events, etc.)
+- `/src/lib/` - Utility functions and configurations
+- `/src/components/ui/` - shadcn/ui components
+- `/src/lib/db/schema/*` - All schema files are here
 
 ## Database Access
 

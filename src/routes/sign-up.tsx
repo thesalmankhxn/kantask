@@ -1,18 +1,21 @@
-import { Link, redirect } from "@tanstack/react-router"
-import { Layout } from "src/components/layout"
-import { SignUpForm } from "src/components/auth/sign-up-form"
+import { Link, redirect } from "@tanstack/react-router";
+import { Layout } from "src/components/layout";
+import { SignUpForm } from "src/components/auth/sign-up-form";
+import { authQueries } from "~/services/queries";
 
 export const Route = createFileRoute({
   component: RouteComponent,
   beforeLoad: async ({ context }) => {
-    if (context.userSession) {
-      throw redirect({ to: "/" })
+    const userSession = await context.queryClient.fetchQuery(
+      authQueries.user(),
+    );
+    if (userSession) {
+      throw redirect({ to: "/" });
     }
   },
-})
+});
 
 function RouteComponent() {
-  console.log("Sign Up RouteComponent rendered")
   return (
     <Layout className="items-center gap-2 max-w-md">
       <SignUpForm />
@@ -23,5 +26,5 @@ function RouteComponent() {
         </Link>
       </small>
     </Layout>
-  )
+  );
 }

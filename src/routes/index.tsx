@@ -1,31 +1,30 @@
-import { ErrorComponent, useNavigate } from "@tanstack/react-router"
-import React from "react"
-import { ErrorBoundary } from "react-error-boundary"
-import { EventCardSkeleton } from "src/components/event/event-card-skeleton"
-import { EventsList } from "src/components/event/events-list"
-import { EventFiltersBar } from "src/components/filters/event-filters-bar"
-import { Layout } from "src/components/layout"
-import { EventFilters, EventFiltersSchema } from "src/services/event.schema"
-import { tagQueries } from "src/services/queries"
+import { ErrorComponent, useNavigate } from "@tanstack/react-router";
+import React from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import { EventCardSkeleton } from "src/components/event/event-card-skeleton";
+import { EventsList } from "src/components/event/events-list";
+import { EventFiltersBar } from "src/components/filters/event-filters-bar";
+import { Layout } from "src/components/layout";
+import { EventFilters, EventFiltersSchema } from "src/services/event.schema";
+import { tagQueries } from "src/services/queries";
 
 export const Route = createFileRoute({
   beforeLoad: ({ context }) => {
-    console.log("Home route beforeLoad called")
-    context.queryClient.ensureQueryData(tagQueries.list())
+    context.queryClient.ensureQueryData(tagQueries.list());
   },
   component: Home,
   validateSearch: EventFiltersSchema,
-})
+});
 
-const skeletons = Array.from({ length: 2 })
+const skeletons = Array.from({ length: 2 });
 
 function Home() {
-  const filters = Route.useSearch()
+  const filters = Route.useSearch();
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const setFilters = (newFilters: EventFilters) => {
-    navigate({ from: Route.fullPath, search: newFilters })
-  }
+    navigate({ from: Route.fullPath, search: newFilters });
+  };
 
   return (
     <Layout>
@@ -59,5 +58,5 @@ function Home() {
         </div>
       </div>
     </Layout>
-  )
+  );
 }

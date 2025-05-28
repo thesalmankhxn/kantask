@@ -1,34 +1,33 @@
-import { createMiddleware, createServerFn, json } from "@tanstack/react-start"
-import { getWebRequest } from "@tanstack/react-start/server"
-import { eq } from "drizzle-orm"
-import { auth } from "~/lib/auth/auth"
-import { db } from "~/lib/db"
-import { userTable } from "~/lib/db/schema"
-import { UserMetaSchema } from "./auth.schema"
+import { createMiddleware, createServerFn, json } from "@tanstack/react-start";
+import { getWebRequest } from "@tanstack/react-start/server";
+import { eq } from "drizzle-orm";
+import { auth } from "~/lib/auth/auth";
+import { db } from "~/lib/db";
+import { userTable } from "~/lib/db/schema";
+import { UserMetaSchema } from "./auth.schema";
 
 export const getUserSession = createServerFn({ method: "GET" }).handler(
   async () => {
-    console.log("getUserSession called")
-    const request = getWebRequest()
+    const request = getWebRequest();
 
     if (!request?.headers) {
-      return null
+      return null;
     }
 
-    const userSession = await auth.api.getSession({ headers: request.headers })
-    console.log("User session:", userSession?.user.name)
+    const userSession = await auth.api.getSession({ headers: request.headers });
+    console.log("User session: FROM API", userSession);
 
-    return userSession
+    return userSession;
   },
-)
+);
 
 export const userMiddleware = createMiddleware({ type: "function" }).server(
   async ({ next }) => {
-    const userSession = await getUserSession()
+    const userSession = await getUserSession();
 
-    return next({ context: { userSession } })
+    return next({ context: { userSession } });
   },
-)
+);
 
 export const userRequiredMiddleware = createMiddleware({ type: "function" })
   .middleware([userMiddleware])
@@ -37,11 +36,11 @@ export const userRequiredMiddleware = createMiddleware({ type: "function" })
       throw json(
         { message: "You must be logged in to do that!" },
         { status: 401 },
-      )
+      );
     }
 
-    return next({ context: { userSession: context.userSession } })
-  })
+    return next({ context: { userSession: context.userSession } });
+  });
 
 export const updateUser = createServerFn()
   .validator(UserMetaSchema)
@@ -50,5 +49,5 @@ export const updateUser = createServerFn()
     await db
       .update(userTable)
       .set({ name: data.username })
-      .where(eq(userTable.id, userSession.user.id))
-  })
+      .where(eq(userTable.id, userSession.user.id));
+  });
