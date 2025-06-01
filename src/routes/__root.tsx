@@ -48,6 +48,20 @@ export const Route = createRootRouteWithContext<{
         href: "/favicon.png",
       },
     ],
+    scripts: [
+      {
+        children: `
+          (function() {
+            const theme = localStorage.getItem('theme') || 'system';
+            if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+              document.documentElement.classList.add('dark');
+            } else {
+              document.documentElement.classList.remove('dark');
+            }
+          })();
+        `,
+      },
+    ],
   }),
   component: RootComponent,
 });
