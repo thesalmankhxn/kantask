@@ -14,7 +14,7 @@ const AppContext = createContext<AppContextValues>({} as AppContextValues);
 export function AppContextProvider(props: React.PropsWithChildren) {
   const [theme, setTheme] = useState<Theme>(() => {
     // Check if we're in a browser environment
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const savedTheme = localStorage.getItem("theme") as Theme | null;
       return savedTheme || "system";
     }
@@ -23,27 +23,32 @@ export function AppContextProvider(props: React.PropsWithChildren) {
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-  const updateTheme = (value: Theme) => {
-    // Only update DOM and localStorage in browser environment
-    if (typeof window !== 'undefined') {
-      const htmlElement = document.documentElement;
+  // Apply theme when component mounts and when theme changes
+  useEffect(() => {
+    if (typeof window === "undefined") return;
 
-      if (value === "system") {
-        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-          .matches
-          ? "dark"
-          : "light";
-        if (systemTheme === "dark") {
-          htmlElement.classList.add("dark");
-        } else {
-          htmlElement.classList.remove("dark");
-        }
-      } else if (value === "dark") {
+    const htmlElement = document.documentElement;
+
+    if (theme === "system") {
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
+        .matches
+        ? "dark"
+        : "light";
+      if (systemTheme === "dark") {
         htmlElement.classList.add("dark");
       } else {
         htmlElement.classList.remove("dark");
       }
+    } else if (theme === "dark") {
+      htmlElement.classList.add("dark");
+    } else {
+      htmlElement.classList.remove("dark");
+    }
+  }, [theme]);
 
+  const updateTheme = (value: Theme) => {
+    // Only update DOM and localStorage in browser environment
+    if (typeof window !== "undefined") {
       localStorage.setItem("theme", value);
     }
     setTheme(value);
@@ -59,7 +64,7 @@ export function AppContextProvider(props: React.PropsWithChildren) {
 
   // Listen for system theme changes
   useEffect(() => {
-    if (theme !== "system" || typeof window === 'undefined') return;
+    if (theme !== "system" || typeof window === "undefined") return;
 
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleChange = () => {
