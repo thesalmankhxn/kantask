@@ -29,7 +29,7 @@ export const Header = () => {
           <UserMenu />
         </SignedIn>
         <SignedOut>
-          <ButtonLink size={"sm"} to="/sign-in">
+          <ButtonLink size={"sm"} to="/signin">
             Sign In
           </ButtonLink>
         </SignedOut>

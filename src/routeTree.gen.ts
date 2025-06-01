@@ -13,31 +13,20 @@ import type { CreateFileRoute, FileRoutesByPath } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as SignUpRouteImport } from './routes/sign-up'
-import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as CalendarRouteImport } from './routes/calendar'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as CommunitiesIndexRouteImport } from './routes/communities/index'
 import { Route as EventsSubmitRouteImport } from './routes/events/submit'
 import { Route as EventsEventIdRouteImport } from './routes/events/$eventId'
+import { Route as authSignupRouteRouteImport } from './routes/(auth)/signup/route'
+import { Route as authSigninRouteRouteImport } from './routes/(auth)/signin/route'
 import { Route as CommunitiesManagementIndexRouteImport } from './routes/communities/management/index'
+import { Route as AuthenticatedLayoutIndexRouteImport } from './routes/_authenticated/_layout/index'
 import { Route as CommunitiesManagementCreateRouteImport } from './routes/communities/management/create'
 import { Route as CommunitiesManagementCommunityIdRouteImport } from './routes/communities/management/$communityId'
 
 // Create/Update Routes
-
-const SignUpRoute = SignUpRouteImport.update({
-  id: '/sign-up',
-  path: '/sign-up',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const SignInRoute = SignInRouteImport.update({
-  id: '/sign-in',
-  path: '/sign-in',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
@@ -51,9 +40,8 @@ const CalendarRoute = CalendarRouteImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -75,11 +63,30 @@ const EventsEventIdRoute = EventsEventIdRouteImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const authSignupRouteRoute = authSignupRouteRouteImport.update({
+  id: '/(auth)/signup',
+  path: '/signup',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const authSigninRouteRoute = authSigninRouteRouteImport.update({
+  id: '/(auth)/signin',
+  path: '/signin',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const CommunitiesManagementIndexRoute =
   CommunitiesManagementIndexRouteImport.update({
     id: '/communities/management/',
     path: '/communities/management/',
     getParentRoute: () => rootRoute,
+  } as any)
+
+const AuthenticatedLayoutIndexRoute =
+  AuthenticatedLayoutIndexRouteImport.update({
+    id: '/_layout/',
+    path: '/',
+    getParentRoute: () => AuthenticatedRoute,
   } as any)
 
 const CommunitiesManagementCreateRoute =
@@ -100,11 +107,11 @@ const CommunitiesManagementCommunityIdRoute =
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRoute
     }
     '/calendar': {
@@ -121,18 +128,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRoute
     }
-    '/sign-in': {
-      id: '/sign-in'
-      path: '/sign-in'
-      fullPath: '/sign-in'
-      preLoaderRoute: typeof SignInRouteImport
+    '/(auth)/signin': {
+      id: '/(auth)/signin'
+      path: '/signin'
+      fullPath: '/signin'
+      preLoaderRoute: typeof authSigninRouteRouteImport
       parentRoute: typeof rootRoute
     }
-    '/sign-up': {
-      id: '/sign-up'
-      path: '/sign-up'
-      fullPath: '/sign-up'
-      preLoaderRoute: typeof SignUpRouteImport
+    '/(auth)/signup': {
+      id: '/(auth)/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof authSignupRouteRouteImport
       parentRoute: typeof rootRoute
     }
     '/events/$eventId': {
@@ -170,6 +177,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CommunitiesManagementCreateRouteImport
       parentRoute: typeof rootRoute
     }
+    '/_authenticated/_layout/': {
+      id: '/_authenticated/_layout/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedLayoutIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/communities/management/': {
       id: '/communities/management/'
       path: '/communities/management'
@@ -182,13 +196,13 @@ declare module '@tanstack/react-router' {
 
 // Add type-safety to the createFileRoute function across the route tree
 
-declare module './routes/index' {
+declare module './routes/_authenticated' {
   const createFileRoute: CreateFileRoute<
-    '/',
-    FileRoutesByPath['/']['parentRoute'],
-    FileRoutesByPath['/']['id'],
-    FileRoutesByPath['/']['path'],
-    FileRoutesByPath['/']['fullPath']
+    '/_authenticated',
+    FileRoutesByPath['/_authenticated']['parentRoute'],
+    FileRoutesByPath['/_authenticated']['id'],
+    FileRoutesByPath['/_authenticated']['path'],
+    FileRoutesByPath['/_authenticated']['fullPath']
   >
 }
 declare module './routes/calendar' {
@@ -209,22 +223,22 @@ declare module './routes/profile' {
     FileRoutesByPath['/profile']['fullPath']
   >
 }
-declare module './routes/sign-in' {
+declare module './routes/(auth)/signin/route' {
   const createFileRoute: CreateFileRoute<
-    '/sign-in',
-    FileRoutesByPath['/sign-in']['parentRoute'],
-    FileRoutesByPath['/sign-in']['id'],
-    FileRoutesByPath['/sign-in']['path'],
-    FileRoutesByPath['/sign-in']['fullPath']
+    '/(auth)/signin',
+    FileRoutesByPath['/(auth)/signin']['parentRoute'],
+    FileRoutesByPath['/(auth)/signin']['id'],
+    FileRoutesByPath['/(auth)/signin']['path'],
+    FileRoutesByPath['/(auth)/signin']['fullPath']
   >
 }
-declare module './routes/sign-up' {
+declare module './routes/(auth)/signup/route' {
   const createFileRoute: CreateFileRoute<
-    '/sign-up',
-    FileRoutesByPath['/sign-up']['parentRoute'],
-    FileRoutesByPath['/sign-up']['id'],
-    FileRoutesByPath['/sign-up']['path'],
-    FileRoutesByPath['/sign-up']['fullPath']
+    '/(auth)/signup',
+    FileRoutesByPath['/(auth)/signup']['parentRoute'],
+    FileRoutesByPath['/(auth)/signup']['id'],
+    FileRoutesByPath['/(auth)/signup']['path'],
+    FileRoutesByPath['/(auth)/signup']['fullPath']
   >
 }
 declare module './routes/events/$eventId' {
@@ -272,6 +286,15 @@ declare module './routes/communities/management/create' {
     FileRoutesByPath['/communities/management/create']['fullPath']
   >
 }
+declare module './routes/_authenticated/_layout/index' {
+  const createFileRoute: CreateFileRoute<
+    '/_authenticated/_layout/',
+    FileRoutesByPath['/_authenticated/_layout/']['parentRoute'],
+    FileRoutesByPath['/_authenticated/_layout/']['id'],
+    FileRoutesByPath['/_authenticated/_layout/']['path'],
+    FileRoutesByPath['/_authenticated/_layout/']['fullPath']
+  >
+}
 declare module './routes/communities/management/index' {
   const createFileRoute: CreateFileRoute<
     '/communities/management/',
@@ -284,98 +307,114 @@ declare module './routes/communities/management/index' {
 
 // Create and export the route tree
 
+interface AuthenticatedRouteChildren {
+  AuthenticatedLayoutIndexRoute: typeof AuthenticatedLayoutIndexRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedLayoutIndexRoute: AuthenticatedLayoutIndexRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '': typeof AuthenticatedRouteWithChildren
   '/calendar': typeof CalendarRoute
   '/profile': typeof ProfileRoute
-  '/sign-in': typeof SignInRoute
-  '/sign-up': typeof SignUpRoute
+  '/signin': typeof authSigninRouteRoute
+  '/signup': typeof authSignupRouteRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/events/submit': typeof EventsSubmitRoute
   '/communities': typeof CommunitiesIndexRoute
   '/communities/management/$communityId': typeof CommunitiesManagementCommunityIdRoute
   '/communities/management/create': typeof CommunitiesManagementCreateRoute
+  '/': typeof AuthenticatedLayoutIndexRoute
   '/communities/management': typeof CommunitiesManagementIndexRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/calendar': typeof CalendarRoute
   '/profile': typeof ProfileRoute
-  '/sign-in': typeof SignInRoute
-  '/sign-up': typeof SignUpRoute
+  '/signin': typeof authSigninRouteRoute
+  '/signup': typeof authSignupRouteRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/events/submit': typeof EventsSubmitRoute
   '/communities': typeof CommunitiesIndexRoute
   '/communities/management/$communityId': typeof CommunitiesManagementCommunityIdRoute
   '/communities/management/create': typeof CommunitiesManagementCreateRoute
+  '/': typeof AuthenticatedLayoutIndexRoute
   '/communities/management': typeof CommunitiesManagementIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/calendar': typeof CalendarRoute
   '/profile': typeof ProfileRoute
-  '/sign-in': typeof SignInRoute
-  '/sign-up': typeof SignUpRoute
+  '/(auth)/signin': typeof authSigninRouteRoute
+  '/(auth)/signup': typeof authSignupRouteRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/events/submit': typeof EventsSubmitRoute
   '/communities/': typeof CommunitiesIndexRoute
   '/communities/management/$communityId': typeof CommunitiesManagementCommunityIdRoute
   '/communities/management/create': typeof CommunitiesManagementCreateRoute
+  '/_authenticated/_layout/': typeof AuthenticatedLayoutIndexRoute
   '/communities/management/': typeof CommunitiesManagementIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
+    | ''
     | '/calendar'
     | '/profile'
-    | '/sign-in'
-    | '/sign-up'
+    | '/signin'
+    | '/signup'
     | '/events/$eventId'
     | '/events/submit'
     | '/communities'
     | '/communities/management/$communityId'
     | '/communities/management/create'
+    | '/'
     | '/communities/management'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
     | '/calendar'
     | '/profile'
-    | '/sign-in'
-    | '/sign-up'
+    | '/signin'
+    | '/signup'
     | '/events/$eventId'
     | '/events/submit'
     | '/communities'
     | '/communities/management/$communityId'
     | '/communities/management/create'
+    | '/'
     | '/communities/management'
   id:
     | '__root__'
-    | '/'
+    | '/_authenticated'
     | '/calendar'
     | '/profile'
-    | '/sign-in'
-    | '/sign-up'
+    | '/(auth)/signin'
+    | '/(auth)/signup'
     | '/events/$eventId'
     | '/events/submit'
     | '/communities/'
     | '/communities/management/$communityId'
     | '/communities/management/create'
+    | '/_authenticated/_layout/'
     | '/communities/management/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   CalendarRoute: typeof CalendarRoute
   ProfileRoute: typeof ProfileRoute
-  SignInRoute: typeof SignInRoute
-  SignUpRoute: typeof SignUpRoute
+  authSigninRouteRoute: typeof authSigninRouteRoute
+  authSignupRouteRoute: typeof authSignupRouteRoute
   EventsEventIdRoute: typeof EventsEventIdRoute
   EventsSubmitRoute: typeof EventsSubmitRoute
   CommunitiesIndexRoute: typeof CommunitiesIndexRoute
@@ -385,11 +424,11 @@ export interface RootRouteChildren {
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
   CalendarRoute: CalendarRoute,
   ProfileRoute: ProfileRoute,
-  SignInRoute: SignInRoute,
-  SignUpRoute: SignUpRoute,
+  authSigninRouteRoute: authSigninRouteRoute,
+  authSignupRouteRoute: authSignupRouteRoute,
   EventsEventIdRoute: EventsEventIdRoute,
   EventsSubmitRoute: EventsSubmitRoute,
   CommunitiesIndexRoute: CommunitiesIndexRoute,
@@ -408,11 +447,11 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/",
+        "/_authenticated",
         "/calendar",
         "/profile",
-        "/sign-in",
-        "/sign-up",
+        "/(auth)/signin",
+        "/(auth)/signup",
         "/events/$eventId",
         "/events/submit",
         "/communities/",
@@ -421,8 +460,11 @@ export const routeTree = rootRoute
         "/communities/management/"
       ]
     },
-    "/": {
-      "filePath": "index.tsx"
+    "/_authenticated": {
+      "filePath": "_authenticated.tsx",
+      "children": [
+        "/_authenticated/_layout/"
+      ]
     },
     "/calendar": {
       "filePath": "calendar.tsx"
@@ -430,11 +472,11 @@ export const routeTree = rootRoute
     "/profile": {
       "filePath": "profile.tsx"
     },
-    "/sign-in": {
-      "filePath": "sign-in.tsx"
+    "/(auth)/signin": {
+      "filePath": "(auth)/signin/route.tsx"
     },
-    "/sign-up": {
-      "filePath": "sign-up.tsx"
+    "/(auth)/signup": {
+      "filePath": "(auth)/signup/route.tsx"
     },
     "/events/$eventId": {
       "filePath": "events/$eventId.tsx"
@@ -450,6 +492,10 @@ export const routeTree = rootRoute
     },
     "/communities/management/create": {
       "filePath": "communities/management/create.tsx"
+    },
+    "/_authenticated/_layout/": {
+      "filePath": "_authenticated/_layout/index.tsx",
+      "parent": "/_authenticated"
     },
     "/communities/management/": {
       "filePath": "communities/management/index.tsx"

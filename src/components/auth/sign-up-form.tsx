@@ -141,7 +141,7 @@ export const SignUpForm = () => {
           </div>
 
           <Link
-            to="/sign-in"
+            to="/signin"
             className={buttonVariants({
               variant: "link",
               className: "text-left pl-0 w-fit my-2.5",
