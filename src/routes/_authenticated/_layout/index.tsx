@@ -1,5 +1,5 @@
-import { ErrorComponent, useNavigate } from "@tanstack/react-router";
-import React from "react";
+import { ErrorComponent, Outlet, useNavigate } from "@tanstack/react-router";
+import React, { useMemo } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { EventCardSkeleton } from "src/components/event/event-card-skeleton";
 import { EventsList } from "src/components/event/events-list";
@@ -7,6 +7,9 @@ import { EventFiltersBar } from "src/components/filters/event-filters-bar";
 import { Layout } from "src/components/layout";
 import { EventFilters, EventFiltersSchema } from "src/services/event.schema";
 import { tagQueries } from "src/services/queries";
+import { AppSidebar } from "~/components/app-sidebar";
+import { SidebarProvider } from "~/components/ui/sidebar";
+import { getSidebarStateFromCookie } from "~/lib/utils";
 
 export const Route = createFileRoute({
   beforeLoad: ({ context }) => {
@@ -26,37 +29,21 @@ function Home() {
     navigate({ from: Route.fullPath, search: newFilters });
   };
 
+  const defaultSidebarState = useMemo(() => getSidebarStateFromCookie(), []);
+
   return (
-    <Layout>
-      <div className="mb-9 text-center">
-        <h1 className="text-4xl font-bold tracking-tight mb-3">
-          Tech Events & Conferences
-        </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Discover the best tech conferences, meetups, and workshops happening
-          around the world.
-        </p>
-      </div>
-      <div className="flex flex-col gap-4 w-full">
-        <ErrorBoundary
-          fallbackRender={(props) => <ErrorComponent error={props.error} />}
-        >
-          <EventFiltersBar filters={filters} onSetFilters={setFilters} />
-        </ErrorBoundary>
-        <div className="flex flex-col gap-4">
-          <ErrorBoundary
-            fallbackRender={(props) => <ErrorComponent error={props.error} />}
-          >
-            <React.Suspense
-              fallback={skeletons.map((_, index) => (
-                <EventCardSkeleton key={index} />
-              ))}
-            >
-              <EventsList />
-            </React.Suspense>
-          </ErrorBoundary>
+    <SidebarProvider defaultOpen={defaultSidebarState}>
+      <AppSidebar />
+
+      <main className="flex flex-col h-svh flex-1">
+        {/* <TopSection /> */}
+
+        <div className="flex-1 min-h-0 h-full">
+          <Outlet />
         </div>
-      </div>
-    </Layout>
+      </main>
+
+      {/* <CommandDialog /> */}
+    </SidebarProvider>
   );
 }

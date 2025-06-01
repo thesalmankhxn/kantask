@@ -1,12 +1,12 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 export async function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export function getColorFromName(name: string) {
@@ -31,54 +31,67 @@ export function getColorFromName(name: string) {
     "bg-green-300",
     "bg-blue-300",
     "bg-purple-300",
-  ]
+  ];
 
-  let index = 0
+  let index = 0;
   if (name.length > 0) {
-    let code = 0
+    let code = 0;
     for (let i = 0; i < 3 && i < name.length; i++) {
-      code += name.charCodeAt(i) + name.charCodeAt(name.length - 1 - i)
+      code += name.charCodeAt(i) + name.charCodeAt(name.length - 1 - i);
     }
 
-    index = code + name.length
+    index = code + name.length;
   }
 
-  return colors[index % colors.length]
+  return colors[index % colors.length];
 }
 
 export function getFirstSunday(year: number, month: number): Date {
-  const firstDayOfMonth = new Date(year, month - 1, 1)
-  const dayOfWeek = firstDayOfMonth.getDay() // 0 (Sunday) to 6 (Saturday)
+  const firstDayOfMonth = new Date(year, month - 1, 1);
+  const dayOfWeek = firstDayOfMonth.getDay(); // 0 (Sunday) to 6 (Saturday)
 
-  let diff = 0
+  let diff = 0;
   if (dayOfWeek !== 0) {
-    diff = -dayOfWeek
+    diff = -dayOfWeek;
   }
 
-  const firstSunday = new Date(year, month - 1, 1 + diff)
-  return firstSunday
+  const firstSunday = new Date(year, month - 1, 1 + diff);
+  return firstSunday;
 }
 
 export function getLastSaturday(year: number, month: number): Date {
-  const lastDayOfMonth = new Date(year, month, 0)
-  const dayOfWeek = lastDayOfMonth.getDay() // 0 (Sunday) to 6 (Saturday)
+  const lastDayOfMonth = new Date(year, month, 0);
+  const dayOfWeek = lastDayOfMonth.getDay(); // 0 (Sunday) to 6 (Saturday)
 
-  let diff = 6 - dayOfWeek
+  let diff = 6 - dayOfWeek;
 
   const lastSaturday = new Date(
     year,
     month - 1,
     lastDayOfMonth.getDate() + diff,
-  )
-  return lastSaturday
+  );
+  return lastSaturday;
 }
 
 export function getFirstAndLast(
   year: number,
   month: number,
 ): { firstSunday: Date; lastSaturday: Date } {
-  const firstSunday = getFirstSunday(year, month)
-  const lastSaturday = getLastSaturday(year, month)
+  const firstSunday = getFirstSunday(year, month);
+  const lastSaturday = getLastSaturday(year, month);
 
-  return { firstSunday, lastSaturday }
+  return { firstSunday, lastSaturday };
+}
+
+export function getSidebarStateFromCookie(): boolean {
+  // Check if we're in a browser environment
+  if (typeof window === "undefined") {
+    return true; // Default value for server-side rendering
+  }
+
+  const cookies = document.cookie.split(";");
+  const sidebarCookie = cookies.find((cookie) =>
+    cookie.trim().startsWith("sidebar:state="),
+  );
+  return sidebarCookie ? sidebarCookie.split("=")[1] === "true" : true;
 }
