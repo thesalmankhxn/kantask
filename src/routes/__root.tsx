@@ -94,9 +94,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           {children}
           <Scripts />
           <Toaster />
-          <React.Suspense>
-            <TanStackRouterDevtools />
-          </React.Suspense>
+          <React.Suspense>{/* <TanStackRouterDevtools /> */}</React.Suspense>
         </body>
       </html>
     </AppContextProvider>

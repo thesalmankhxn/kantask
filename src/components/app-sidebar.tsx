@@ -8,6 +8,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "~/components/ui/sidebar";
+import { NavUser } from "~/components/nav-user";
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   useEffect(() => {
@@ -31,7 +32,9 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         <NavNotes /> */}
       </SidebarContent>
 
-      <SidebarFooter>{/* <NavUser /> */}</SidebarFooter>
+      <SidebarFooter>
+        <NavUser />
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );
