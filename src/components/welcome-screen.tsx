@@ -27,7 +27,7 @@ export function WelcomeScreen({
     <div className="flex flex-col items-center justify-center min-h-[500px] p-6 w-full max-w-4xl mx-auto">
       <div className="text-center mb-8 space-y-3">
         <h1 className="text-3xl font-bold tracking-tight">
-          Welcome, {userName}!{" "}
+          Welcome, <span className="capitalize">{userName}!</span>{" "}
           <span className="inline-block animate-wave">👋</span>
         </h1>
         <p className="text-muted-foreground text-lg">
