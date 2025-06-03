@@ -1,10 +1,10 @@
-import { useQueryClient } from "@tanstack/react-query"
-import { createLink, useRouter } from "@tanstack/react-router"
-import { LogOut, User } from "lucide-react"
-import { useState } from "react"
-import { authClient, useAuthenticatedUser } from "~/lib/auth/client"
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
-import { Button } from "./ui/button"
+import { useQueryClient } from "@tanstack/react-query";
+import { createLink, useRouter } from "@tanstack/react-router";
+import { LogOut, User } from "lucide-react";
+import { useState } from "react";
+import { authClient, useAuthenticatedUser } from "~/lib/auth/client";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Button } from "./ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,22 +12,22 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu"
-import { Switch } from "./ui/switch"
+} from "./ui/dropdown-menu";
+import { Switch } from "./ui/switch";
 
-const ItemLink = createLink(DropdownMenuItem)
+const ItemLink = createLink(DropdownMenuItem);
 
 export function UserMenu() {
-  const router = useRouter()
-  const queryClient = useQueryClient()
-  const userSession = useAuthenticatedUser()
-  const [open, setOpen] = useState(false)
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const userSession = useAuthenticatedUser();
+  const [open, setOpen] = useState(false);
 
   const handleLogout = async () => {
-    await authClient.signOut()
-    await queryClient.invalidateQueries()
-    router.invalidate()
-  }
+    await authClient.signOut();
+    await queryClient.invalidateQueries();
+    router.invalidate();
+  };
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -44,7 +44,7 @@ export function UserMenu() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">
+            <p className="text-sm font-medium leading-none capitalize">
               {userSession.user.name ?? "User"}
             </p>
             <p className="text-xs leading-none text-muted-foreground">
@@ -83,5 +83,5 @@ export function UserMenu() {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

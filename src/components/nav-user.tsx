@@ -86,7 +86,7 @@ export function NavUser() {
                   />
 
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="font-medium truncate">
+                    <span className="font-medium truncate capitalize">
                       {userSession.user.name}
                     </span>
                   </div>
@@ -107,7 +107,7 @@ export function NavUser() {
                     />
 
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">
+                      <span className="truncate font-semibold capitalize">
                         {userSession.user.name}
                       </span>
                       <span className="truncate text-xs">

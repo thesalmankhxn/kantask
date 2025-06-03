@@ -1,64 +1,27 @@
-import {
-  ErrorComponent,
-  linkOptions,
-  Outlet,
-  useNavigate,
-} from "@tanstack/react-router";
-import React, { useMemo } from "react";
-import { ErrorBoundary } from "react-error-boundary";
-import { EventCardSkeleton } from "src/components/event/event-card-skeleton";
-import { EventsList } from "src/components/event/events-list";
-import { EventFiltersBar } from "src/components/filters/event-filters-bar";
-import { Layout } from "src/components/layout";
-import { EventFilters, EventFiltersSchema } from "src/services/event.schema";
-import { tagQueries } from "src/services/queries";
-import { AppSidebar } from "~/components/app-sidebar";
-import { TopSection } from "~/components/top-section";
-import { BreadcrumbsData } from "~/components/tsr-breadcrumbs";
-import { SidebarProvider } from "~/components/ui/sidebar";
-import { getSidebarStateFromCookie } from "~/lib/utils";
+import { Link } from "@tanstack/react-router";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { WelcomeScreen } from "~/components/welcome-screen";
+import { useAuthenticatedUser } from "~/lib/auth/client";
+import { router } from "~/router";
 
 export const Route = createFileRoute({
-  beforeLoad: ({ context }) => {
-    context.queryClient.ensureQueryData(tagQueries.list());
-  },
-  component: Home,
-  validateSearch: EventFiltersSchema,
-  loader: (): BreadcrumbsData => ({
-    breadcrumbs: linkOptions([
-      {
-        to: "/",
-        label: "Home",
-      },
-    ]),
-  }),
+  component: HomeComponent,
 });
 
-const skeletons = Array.from({ length: 2 });
-
-function Home() {
-  const filters = Route.useSearch();
-
-  const navigate = useNavigate();
-  const setFilters = (newFilters: EventFilters) => {
-    navigate({ from: Route.fullPath, search: newFilters });
-  };
-
-  const defaultSidebarState = useMemo(() => getSidebarStateFromCookie(), []);
+function HomeComponent() {
+  const session = useAuthenticatedUser();
 
   return (
-    <SidebarProvider defaultOpen={defaultSidebarState}>
-      <AppSidebar />
-
-      <main className="flex flex-col h-svh flex-1">
-        <TopSection />
-
-        <div className="flex-1 min-h-0 h-full">
-          <Outlet />
-        </div>
+    <div className="min-h-screen flex flex-col items-center p-4 bg-linear-to-b from-background to-secondary/20">
+      <main className="w-full max-w-3xl shadow-lg mt-8 flex flex-col items-center justify-center p-4">
+        <WelcomeScreen
+          userName={session.user.name}
+          onBoardsClick={() => router.navigate({ to: "/boards" })}
+          onNotesClick={() => router.navigate({ to: "/notes" })}
+          onCreateProject={() => router.navigate({ to: "/projects/new" })}
+        />
       </main>
-
-      {/* <CommandDialog /> */}
-    </SidebarProvider>
+    </div>
   );
 }

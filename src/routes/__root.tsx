@@ -86,7 +86,7 @@ const TanStackRouterDevtools =
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <AppContextProvider>
-      <html suppressHydrationWarning>
+      <html suppressHydrationWarning className="overflow-hidden">
         <head>
           <HeadContent />
         </head>
