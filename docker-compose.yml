@@ -1,15 +1,15 @@
 services:
   postgres:
     image: postgres:17
-    command: "-d 1"
     volumes:
       - db_data:/var/lib/postgresql/data
+      - ./docker/init:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=main
+      - POSTGRES_DB=kantask
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -19,7 +19,7 @@ services:
   neon-proxy:
     image: ghcr.io/timowilhelm/local-neon-http-proxy:main
     environment:
-      - PG_CONNECTION_STRING=postgresql://postgres:postgres@localhost:5432/kantask
+      - PG_CONNECTION_STRING=postgresql://postgres:postgres@postgres:5432/kantask
     ports:
       - "4444:4444"
     depends_on:
