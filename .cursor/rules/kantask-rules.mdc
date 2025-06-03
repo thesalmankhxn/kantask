@@ -5,7 +5,7 @@ alwaysApply: true
 ---
 # KanTask - Development Instructions
 
-This is a TanStack Start project for a project management application. Follow these guidelines when developing for this project.
+This is a TanStack Start project for a trello like management application. Follow these guidelines when developing for this project.
 
 ## Project Architecture
 
@@ -21,6 +21,7 @@ This is a TanStack Start project for a project management application. Follow th
 - **Forms**: TanStack Form with the custom `useAppForm` hook
 - **API**: Server functions with `createServerFn()` from `@tanstack/react-start`
 - **Styling**: Tailwind CSS
+- **Database, ORM, & Zero-Sync**: Postgres Database with Drizzle ORM, Zero Sync
 
 ## Code Organization
 
@@ -30,6 +31,20 @@ This is a TanStack Start project for a project management application. Follow th
 - `/src/lib/` - Utility functions and configurations
 - `/src/components/ui/` - shadcn/ui components
 - `/src/lib/db/schema/*` - All schema files are here
+
+## Project Structure
+
+kantask/
+├── src/
+│   ├── routes/          # Route components
+│   ├── components/      # Reusable React components
+│   ├── services/        # API service functions
+│   ├── lib/            # Utilities and configurations
+│   │   ├── db/        # Database schemas
+│   │   └── form/      # Form utilities
+│   └── components/ui/  # shadcn/ui components
+├── public/             # Static assets
+└── [config files]      # Various configuration files
 
 ## Database Access
 
@@ -78,3 +93,25 @@ function YourComponent() {
 - Use toast notifications for user-facing errors
 - Handle zod validation errors appropriately
 - Use error boundaries for component-level error handling
+
+## Getting Started
+
+- Environment setup required (.env file)
+- Database configuration via Drizzle
+- Development server can be started with appropriate package manager commands
+
+## Development Workflow
+
+- Create routes in the /routes directory
+- Implement components in /components
+- Define database schemas in /lib/db/schema
+- Create API services in /services
+- Use shadcn/ui components for consistent UI
+
+## Code Style
+
+- TypeScript for type safety
+- Tailwind CSS for styling
+- Prettier for code formatting
+- ESLint for code quality
+- This project follows modern web development practices with a focus on type safety, component reusability, and maintainable code structure. It's designed to be scalable and follows a clear architectural pattern for easy development and maintenance.
