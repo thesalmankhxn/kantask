@@ -5,7 +5,6 @@ import { drizzle } from "drizzle-orm/neon-http";
 const connectionString = process.env.DATABASE_URL!;
 
 if (process.env.NODE_ENV === "development") {
-  // connectionString = "postgresql://postgres:postgres@localhost:5432/kantask";
   neonConfig.fetchEndpoint = (host) => {
     const [protocol, port] =
       host === "db.localtest.me" ? ["http", 4444] : ["https", 443];

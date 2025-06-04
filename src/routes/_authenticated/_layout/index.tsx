@@ -14,7 +14,7 @@ function HomeComponent() {
 
   return (
     <div className="min-h-screen flex flex-col items-center p-4 bg-linear-to-b from-background to-secondary/20">
-      <main className="w-full max-w-3xl shadow-lg mt-8 flex flex-col items-center justify-center p-4">
+      <main className="w-full max-w-3xl mt-8 flex flex-col items-center justify-center p-4">
         <WelcomeScreen
           userName={session.user.name}
           onBoardsClick={() => router.navigate({ to: "/boards" })}
